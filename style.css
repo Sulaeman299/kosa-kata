@@ -817,3 +817,57 @@ svg.icon { width: 1em; height: 1em; display: inline-block; vertical-align: -0.15
     height: 16px; 
     margin: 0; 
 }
+
+/* Tombol Import di Header Kamus */
+.btn-import-word {
+    width: 100%;
+    margin-top: 10px;
+    background: rgba(181, 56, 255, 0.1);
+    border: 1px solid var(--neon-purple);
+    color: var(--neon-purple);
+    box-shadow: 0 0 10px rgba(181, 56, 255, 0.2);
+    padding: 12px;
+    font-size: 0.9rem;
+    border-radius: 12px;
+}
+.btn-import-word:hover {
+    background: rgba(181, 56, 255, 0.2);
+    box-shadow: 0 0 20px rgba(181, 56, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Tombol Copy Prompt */
+.btn-prompt {
+    background: rgba(255, 210, 63, 0.1);
+    border: 1px solid var(--neon-yellow);
+    color: var(--neon-yellow);
+    font-size: 0.8rem;
+    padding: 10px;
+    box-shadow: none;
+}
+.btn-prompt:hover {
+    background: rgba(255, 210, 63, 0.2);
+    box-shadow: 0 0 15px rgba(255, 210, 63, 0.3);
+}
+
+/* Textarea untuk JSON */
+.custom-textarea {
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: var(--neon-cyan);
+    font-size: 0.85rem;
+    outline: none;
+    transition: all 0.3s ease;
+    font-family: 'Courier New', Courier, monospace;
+    resize: vertical;
+    min-height: 150px;
+}
+.custom-textarea:focus {
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 15px rgba(181, 56, 255, 0.3), inset 0 0 10px rgba(181, 56, 255, 0.1);
+}
+.custom-textarea::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+}
