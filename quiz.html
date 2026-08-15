@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kuis Renshuu - Berjuanglah!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="bg-particles"></div>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+
+    <div class="quiz-container">
+        <header class="quiz-header">
+            <button id="btnExit" class="exit-btn">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                Keluar
+            </button>
+            <div class="score-board">
+                <span id="streakDisplay" class="score-pill">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 3-2 4-2 7a3 3 0 0 0 6 0c0-1-.5-2-1-2 1.5 1 3 3 3 5.5A6.5 6.5 0 0 1 5 12.5C5 8 8 6 8 3c1 1 1.5 2.5 1 4 1-1 2-2.5 3-5z"/></svg>
+                    Streak: <span id="streakValue">0</span>
+                </span>
+                <span id="scoreDisplay" class="score-pill">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M9.5 3 8 9l4 12 4-12-1.5-6"/></svg>
+                    <span id="scoreValue">0</span>
+                </span>
+            </div>
+        </header>
+
+        <div id="loadingScreen" class="loading-screen">
+            <div class="spinner"></div>
+            <p>Menyiapkan kartumu...</p>
+        </div>
+
+        <div id="quizArea" class="quiz-area" style="display: none;">
+
+            <div class="timer-container" id="timerWrapper">
+                <div id="timerBar" class="timer-bar"></div>
+            </div>
+
+            <div class="flip-scene">
+                <div id="flashcard" class="flashcard">
+                    <div class="card-face card-front">
+                        <div class="card-shine"></div>
+                        <div id="questionHint" class="question-hint">Menebak Arti</div>
+                        <div id="questionText" class="question-text">準備中</div>
+                        <div id="flipHint" class="flip-hint" style="display:none;">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+                            Ketuk untuk buka
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-shine"></div>
+                        <div id="backHint" class="question-hint">Jawaban</div>
+                        <p id="answerMain" class="answer-main"></p>
+                        <p id="answerSub" class="answer-sub"></p>
+                        <div class="flip-hint" style="display:flex;">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+                            Ketuk untuk balik lagi
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="options-grid" id="optionsGrid">
+                <button class="option-btn" id="opt0"></button>
+                <button class="option-btn" id="opt1"></button>
+                <button class="option-btn" id="opt2"></button>
+                <button class="option-btn" id="opt3"></button>
+            </div>
+
+            <div id="trueFlashcardControls" style="display: none;">
+                <button id="btnReveal" class="action-btn" style="background: var(--neon-yellow); color: #000; width: 100%;">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="13" height="14" rx="2"/><path d="M20 9v8a2 2 0 0 1-2 2h-2"/><path d="M20 9l-3-3m3 3-3 3"/></svg>
+                    Balik Kartu
+                </button>
+                <div id="nextCardControls" style="display: none; width: 100%; gap: 10px;">
+                    <button id="btnNextCard" class="action-btn" style="width: 50%; background: rgba(255,255,255,0.06); border: 2px solid var(--neon-cyan);">Lanjut</button>
+                    <button id="btnMarkLearned" class="action-btn" style="width: 50%; background: var(--neon-purple);">Sudah Hafal!</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="resultScreen" class="result-screen" style="display: none;">
+            <h2 class="result-title">Sesi Selesai!</h2>
+            <p id="finalScoreText" class="final-score">💎 +0 Poin</p>
+            <p id="emptyMessage" style="color: var(--text-muted); margin-bottom: 20px;"></p>
+            <button id="btnBackToMenu" class="action-btn">Kembali ke Menu</button>
+        </div>
+    </div>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="quiz.js"></script>
+</body>
+</html>
