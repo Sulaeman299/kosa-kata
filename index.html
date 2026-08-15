@@ -79,7 +79,7 @@
         </div>
     </div>
 
-    <!-- MODAL KAMUS KOSAKATA (DIPERBARUI) -->
+    <!-- MODAL KAMUS KOSAKATA -->
     <div id="dictionaryModal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
@@ -91,10 +91,13 @@
             </div>
             <div class="modal-filters">
                 <p>Tandai kosakata yang sudah kamu hafal agar tidak muncul di latihan.</p>
-                <!-- Tombol baru untuk membuka form tambah kosakata -->
                 <button id="btnOpenAddWord" class="action-btn btn-add-word">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                    Tambah Kosakata Baru
+                    Tambah Manual
+                </button>
+                <button id="btnOpenImport" class="action-btn btn-import-word">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    Import Banyak (JSON)
                 </button>
             </div>
             <div id="dictionaryList" class="dictionary-list">
@@ -103,7 +106,7 @@
         </div>
     </div>
 
-    <!-- MODAL TAMBAH KOSAKATA BARU (FITUR BARU) -->
+    <!-- MODAL TAMBAH KOSAKATA MANUAL -->
     <div id="addWordModal" class="modal-overlay" style="display: none;">
         <div class="modal-content form-modal">
             <div class="modal-header">
@@ -130,6 +133,34 @@
                 <button id="btnSaveWord" class="action-btn btn-save">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                     Simpan Kosakata
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL IMPORT JSON -->
+    <div id="importJsonModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content form-modal">
+            <div class="modal-header">
+                <h2 style="color: var(--neon-purple);">Import JSON</h2>
+                <button id="btnCloseImport" class="exit-btn">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                    Batal
+                </button>
+            </div>
+            <div class="form-container">
+                <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">Gunakan tombol di bawah untuk menyalin instruksi (prompt), lalu paste di Gemini. Copy hasilnya dan tempel di kotak ini.</p>
+                
+                <button id="btnCopyPrompt" class="action-btn btn-prompt">
+                    📋 Copy Prompt untuk Gemini
+                </button>
+
+                <div class="input-group">
+                    <textarea id="inputJsonData" class="custom-textarea" rows="8" placeholder='[\n  {\n    "kanji": "水",\n    "hiragana": "みず",\n    "arti": "Air"\n  }\n]'></textarea>
+                </div>
+                
+                <button id="btnProcessImport" class="action-btn btn-save" style="background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink)); box-shadow: 0 0 20px rgba(181, 56, 255, 0.4);">
+                    🚀 Import Sekarang
                 </button>
             </div>
         </div>
