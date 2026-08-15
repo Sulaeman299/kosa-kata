@@ -50,23 +50,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- LOGIKA KAMUS KOSAKATA (DIPERBARUI) ---
+    // --- LOGIKA KAMUS KOSAKATA ---
     const modal = document.getElementById('dictionaryModal');
     const btnOpen = document.getElementById('btnOpenDictionary');
     const btnClose = document.getElementById('btnCloseDictionary');
     const dictList = document.getElementById('dictionaryList');
 
-    // Variabel untuk Modal Tambah Kosakata
+    // Variabel Modal Tambah Manual
     const addWordModal = document.getElementById('addWordModal');
     const btnOpenAddWord = document.getElementById('btnOpenAddWord');
     const btnCloseAddWord = document.getElementById('btnCloseAddWord');
     const btnSaveWord = document.getElementById('btnSaveWord');
     const formFeedback = document.getElementById('formFeedback');
 
-    // JALUR DATABASE BARU
+    // Variabel Modal Import JSON
+    const importJsonModal = document.getElementById('importJsonModal');
+    const btnOpenImport = document.getElementById('btnOpenImport');
+    const btnCloseImport = document.getElementById('btnCloseImport');
+    const btnCopyPrompt = document.getElementById('btnCopyPrompt');
+    const btnProcessImport = document.getElementById('btnProcessImport');
+    const inputJsonData = document.getElementById('inputJsonData');
+
     const DB_PATH = 'custom_app/kosakata';
 
-    // Fungsi memuat data kamus (dipisahkan agar bisa dipanggil ulang)
+    // Fungsi memuat data kamus
     async function loadDictionary() {
         dictList.innerHTML = '<p style="text-align: center;">Memuat data...</p>';
         let hiddenIds = JSON.parse(localStorage.getItem('renshuu_hidden_ids')) || [];
@@ -78,10 +85,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (snapshot.exists()) {
                 const dataObj = snapshot.val();
-                // Mengubah format Firebase (key-value object) menjadi array
                 for (const key in dataObj) {
                     fullData.push({
-                        id: key, // Memakai key bawaan Firebase (huruf & angka acak) sebagai ID
+                        id: key,
                         kanji: dataObj[key].kanji || '-',
                         hiragana: dataObj[key].hiragana,
                         arti: dataObj[key].arti
@@ -96,12 +102,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // Urutkan data terbaru di atas
+            fullData.reverse();
+
             fullData.forEach(item => {
                 const isHidden = hiddenIds.includes(item.id);
                 const div = document.createElement('div');
                 div.className = `dict-item ${isHidden ? 'hidden-item' : ''}`;
                 
-                // Jika input Kanji kosong, tampilkan Hiragana dengan ukuran besar
                 const displayKanji = item.kanji !== '-' ? item.kanji : item.hiragana;
                 const displayHira = item.kanji !== '-' ? item.hiragana : '';
 
@@ -125,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 dictList.appendChild(div);
             });
 
-            // Event listener tombol "Hafal?"
             document.querySelectorAll('.toggle-hide-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = e.target.getAttribute('data-id');
@@ -146,7 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            // Event listener tombol "Hapus" (FITUR BARU)
             document.querySelectorAll('.btn-delete').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     const targetBtn = e.target.closest('.btn-delete');
@@ -155,12 +161,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     if(confirm("Yakin ingin menghapus kosakata ini secara permanen?")) {
                         try {
                             await remove(ref(db, `${DB_PATH}/${id}`));
-                            // Hapus ID dari localStorage juga agar data tidak menjadi 'hantu'
                             let currentHidden = JSON.parse(localStorage.getItem('renshuu_hidden_ids')) || [];
                             currentHidden = currentHidden.filter(hId => hId !== id);
                             localStorage.setItem('renshuu_hidden_ids', JSON.stringify(currentHidden));
                             
-                            loadDictionary(); // Refresh daftar otomatis
+                            loadDictionary();
                         } catch(err) {
                             alert("Gagal menghapus data.");
                         }
@@ -174,14 +179,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    btnOpen.addEventListener('click', () => {
-        modal.style.display = 'flex';
-        loadDictionary();
-    });
-
+    btnOpen.addEventListener('click', () => { modal.style.display = 'flex'; loadDictionary(); });
     btnClose.addEventListener('click', () => { modal.style.display = 'none'; });
 
-    // --- LOGIKA TAMBAH KOSAKATA BARU (FITUR BARU) ---
+    // --- TAMBAH KOSAKATA MANUAL ---
     btnOpenAddWord.addEventListener('click', () => {
         addWordModal.style.display = 'flex';
         document.getElementById('inputKanji').value = '';
@@ -189,45 +190,94 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('inputArti').value = '';
         formFeedback.style.display = 'none';
     });
-
-    btnCloseAddWord.addEventListener('click', () => {
-        addWordModal.style.display = 'none';
-    });
+    btnCloseAddWord.addEventListener('click', () => { addWordModal.style.display = 'none'; });
 
     btnSaveWord.addEventListener('click', async () => {
         const valKanji = document.getElementById('inputKanji').value.trim();
         const valHiragana = document.getElementById('inputHiragana').value.trim();
         const valArti = document.getElementById('inputArti').value.trim();
 
-        // Validasi
-        if (!valHiragana || !valArti) {
-            formFeedback.style.display = 'block';
-            return;
-        }
+        if (!valHiragana || !valArti) { formFeedback.style.display = 'block'; return; }
         formFeedback.style.display = 'none';
 
-        // Mencegah double-click
         btnSaveWord.disabled = true;
         btnSaveWord.innerText = 'Menyimpan...';
 
         try {
-            // Push ke Firebase (Firebase otomatis membuat ID Unik acak)
             const newDataRef = push(ref(db, DB_PATH));
-            await set(newDataRef, {
-                kanji: valKanji !== "" ? valKanji : "-", // Jika kosong, diisi "-"
-                hiragana: valHiragana,
-                arti: valArti
-            });
-
-            addWordModal.style.display = 'none'; // Tutup form
-            loadDictionary(); // Refresh daftar kamus
+            await set(newDataRef, { kanji: valKanji !== "" ? valKanji : "-", hiragana: valHiragana, arti: valArti });
+            addWordModal.style.display = 'none';
+            loadDictionary();
         } catch (err) {
-            console.error(err);
-            alert("Gagal menyimpan kosakata ke database.");
+            alert("Gagal menyimpan kosakata.");
         } finally {
             btnSaveWord.disabled = false;
-            // Kembalikan tombol ke teks & ikon semula
             btnSaveWord.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Simpan Kosakata';
         }
     });
+
+    // --- IMPORT JSON MASSAL (FITUR BARU) ---
+    btnOpenImport.addEventListener('click', () => {
+        importJsonModal.style.display = 'flex';
+        inputJsonData.value = ''; // Kosongkan text-area
+    });
+    btnCloseImport.addEventListener('click', () => { importJsonModal.style.display = 'none'; });
+
+    // Tombol Copy Prompt
+    btnCopyPrompt.addEventListener('click', () => {
+        // Prompt khusus ini didesain agar hasil Gemini berbentuk JSON murni yang tidak rawan error
+        const promptText = `Buatkan saya 20 kosakata bahasa Jepang tingkat dasar (JLPT N5). Output HARUS dalam format JSON array murni, tanpa blok kode markdown (\`\`\`), tanpa teks pendahuluan, dan tanpa penjelasan apapun di akhir. Format wajib untuk setiap objek: {"kanji": "...", "hiragana": "...", "arti": "..."}. Jika suatu kata tidak memiliki kanji, isi value key "kanji" dengan string "-".`;
+        
+        navigator.clipboard.writeText(promptText).then(() => {
+            const originalText = btnCopyPrompt.innerHTML;
+            btnCopyPrompt.innerHTML = "✅ Prompt Berhasil Disalin!";
+            setTimeout(() => {
+                btnCopyPrompt.innerHTML = originalText;
+            }, 2500);
+        });
+    });
+
+    // Tombol Eksekusi Import
+    btnProcessImport.addEventListener('click', async () => {
+        const rawJson = inputJsonData.value.trim();
+        if (!rawJson) return;
+
+        btnProcessImport.disabled = true;
+        btnProcessImport.innerText = "⏳ Sedang Mengimport...";
+
+        try {
+            // Coba parsing input dari user ke dalam bentuk JSON
+            const dataArray = JSON.parse(rawJson);
+            
+            // Validasi apakah bentuknya benar-benar array
+            if (!Array.isArray(dataArray)) {
+                throw new Error("Format JSON harus diawali dengan [ dan diakhiri dengan ] (Array of Objects).");
+            }
+
+            // Jalankan push berulang (looping) ke Firebase secara asinkron
+            const promises = dataArray.map(item => {
+                const newDataRef = push(ref(db, DB_PATH));
+                return set(newDataRef, {
+                    kanji: item.kanji || "-",
+                    hiragana: item.hiragana || "-",
+                    arti: item.arti || "-"
+                });
+            });
+
+            // Tunggu semua proses upload selesai
+            await Promise.all(promises);
+            
+            alert(`✅ Sukses! ${dataArray.length} kosakata berhasil diunggah ke database.`);
+            importJsonModal.style.display = 'none';
+            loadDictionary(); // Refresh list
+
+        } catch (err) {
+            console.error(err);
+            alert("❌ Gagal Mengimport!\n\nPastikan Anda hanya menempelkan teks JSON murni (tidak ada kata-kata lain). \nError: " + err.message);
+        } finally {
+            btnProcessImport.disabled = false;
+            btnProcessImport.innerHTML = "🚀 Import Sekarang";
+        }
+    });
+
 });
